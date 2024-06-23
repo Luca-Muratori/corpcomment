@@ -3,13 +3,17 @@ import Pattern from './Pattern'
 import PageHeading from './PageHeading'
 import FeedBackForm from './FeedBackForm'
 
-export default function Header() {
+type HeaderProps={
+  onAddToList:(text:string)=>void
+}
+
+export default function Header({onAddToList}:HeaderProps) {
   return (
     <header>
         <Pattern/>
         <Logo/>
         <PageHeading/>
-        <FeedBackForm/>
+        <FeedBackForm onAddToList={onAddToList}/>
     </header>
   )
 }
