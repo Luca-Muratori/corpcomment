@@ -1,21 +1,42 @@
-import Footer from "./components/Footer";
-import HashtagList from "./components/HashtagList";
-import Container from "./components/Container";
+import Footer from "./components/layout/Footer";
+import HashtagList from "./components/hastag/HashtagList";
+import Container from "./components/layout/Container";
 import { TFeedbackItem } from "./components/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function App() {
   const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
 
-  const handleAddToList = (text: string) => {
+  const companyList = useMemo(
+    () =>
+      feedbackItems
+        .map((item) => item.company)
+        .filter((company, index, array) => {
+          return array.indexOf(company) === index;
+        }),
+    [feedbackItems]
+  );
+
+  const filteredFeedbackItems = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItems.filter(
+            (feedbackItem) => feedbackItem.company === selectedCompany
+          )
+        : feedbackItems,
+    [feedbackItems, selectedCompany]
+  );
+
+  const handleAddToList = async (text: string) => {
     const newItem: TFeedbackItem = {
       id: new Date().getTime(),
       text: text,
       upvoteCount: 0,
       daysAgo: 0,
-      companyName: text
+      company: text
         .split(" ")
         .find((word: string) => word.includes("#"))!
         .substring(1),
@@ -28,6 +49,21 @@ function App() {
     };
 
     setFeedbackItems([...feedbackItems, newItem]);
+    await fetch(
+      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+  };
+
+  const handleSelectedCompany = (company: string) => {
+    setSelectedCompany(company);
   };
 
   useEffect(() => {
@@ -60,10 +96,10 @@ function App() {
       <Container
         errorMessage={errorMessage}
         isLoading={isLoading}
-        feedbackItems={feedbackItems}
+        feedbackItems={filteredFeedbackItems}
         handleAddToList={handleAddToList}
       />
-      <HashtagList />
+      <HashtagList companyList={companyList} onClick={handleSelectedCompany} />
     </div>
   );
 }
