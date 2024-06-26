@@ -1,9 +1,15 @@
-import { HashtagItemProp } from "../lib/types";
+type HashtagItemProps = {
+  onSelectCompany: (company: string) => void;
+  company: string;
+};
 
-export default function HashtagComponent({company , onClick}:HashtagItemProp) {
-    return (
-        <li key={company}>
-          <button onClick={()=>onClick(company)}>#{company}</button>
-        </li>
-      );
+export default function HashtagItem({
+  onSelectCompany,
+  company,
+}: HashtagItemProps) {
+  return (
+    <li key={company}>
+      <button onClick={() => onSelectCompany(company)}>#{company}</button>
+    </li>
+  );
 }

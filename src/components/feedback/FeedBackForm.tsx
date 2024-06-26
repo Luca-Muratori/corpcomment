@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { MAX_CHARACTERS } from "../lib/constant";
+import { FeedbackFormProps } from "../lib/types";
 
-type FeedbackFormProps = {
-  onAddToList: (text: string) => void;
-};
-
-export default function FeedBackForm({ onAddToList }: FeedbackFormProps) {
+export default function FeedBackForm({onAddToList}:FeedbackFormProps) {
   const [text, setText] = useState("");
   const [showValidIndicator, setShowValidIndicator] = useState(false);
   const [showInvalidIndicator, setShowInvalidIndicator] = useState(false);
@@ -21,8 +18,9 @@ export default function FeedBackForm({ onAddToList }: FeedbackFormProps) {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
+    event.preventDefault();
 
+    // basic validation
     if (text.includes("#") && text.length >= 5) {
       setShowValidIndicator(true);
       setTimeout(() => setShowValidIndicator(false), 2000);
@@ -33,7 +31,6 @@ export default function FeedBackForm({ onAddToList }: FeedbackFormProps) {
     }
 
     onAddToList(text);
-
     setText("");
   };
 
